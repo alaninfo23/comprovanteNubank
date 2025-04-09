@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <title>Painel de Localizações</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    li { margin-bottom: 10px; }
-    a { color: blue; text-decoration: underline; }
-  </style>
 </head>
 <body>
   <h2>Localizações Recebidas</h2>
@@ -19,21 +14,12 @@
       const res = await fetch('/api/salvar');
       const data = await res.json();
       const ul = document.getElementById('lista');
-      ul.innerHTML = '';
-
       data.reverse().forEach(log => {
         const li = document.createElement('li');
-        const link = `https://www.google.com/maps?q=${log.lat},${log.lon}`;
-        li.innerHTML = `
-          <strong>🕓</strong> ${log.timestamp}<br>
-          <strong>🌍</strong> <a href="${link}" target="_blank">${log.lat}, ${log.lon}</a><br>
-          <strong>🌐 IP:</strong> ${log.ip}<br>
-          <strong>📱 Dispositivo:</strong> ${log.device}<br>
-        `;
+        li.textContent = `${log.timestamp} - Lat: ${log.lat}, Lon: ${log.lon}`;
         ul.appendChild(li);
       });
     }
-
     carregar();
   </script>
 </body>

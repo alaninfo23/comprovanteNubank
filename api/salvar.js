@@ -7,17 +7,10 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const newLog = req.body;
-
-      // Lê os logs existentes
       const fileData = await fs.readFile(filePath, 'utf-8');
       const logs = JSON.parse(fileData);
-
-      // Adiciona o novo log
       logs.push(newLog);
-
-      // Salva no arquivo
       await fs.writeFile(filePath, JSON.stringify(logs, null, 2));
-
       return res.status(200).json({ status: 'ok' });
     } catch (err) {
       console.error('Erro ao salvar:', err);
@@ -33,4 +26,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Erro ao ler os dados.' });
     }
   } else {
-    res.setHeader('Allow', ['GET',
+    res.setHeader('Allow', ['GET', 'POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}
