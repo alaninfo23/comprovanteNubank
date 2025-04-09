@@ -9,26 +9,36 @@
   <h2>Localizações Recebidas</h2>
   <ul id="lista"></ul>
 
-<script>
-  async function carregar() {
-    const res = await fetch('/api/salvar');
-    const data = await res.json();
-    const ul = document.getElementById('lista');
-    ul.innerHTML = '';
+  <script>
+    async function carregar() {
+      const res = await fetch('/api/salvar');
+      const data = await res.json();
+      const ul = document.getElementById('lista');
 
-    data.reverse().forEach(log => {
-      const li = document.createElement('li');
-      const dataFormatada = new Date(log.timestamp).toLocaleString('pt-BR');
-      const link = `https://www.google.com/maps?q=${log.lat},${log.lon}`;
+      // Pega o IP do visitante
+      const ipRes = await fetch('https://api64.ipify.org?format=json');
+      const ipData = await ipRes.json();
+      const ip = ipData.ip;
 
-      li.innerHTML = `${dataFormatada} - <a href="${link}" target="_blank">Ver no mapa 🌍</a>`;
-      ul.appendChild(li);
-    });
-  }
+      data.reverse().forEach(log => {
+        const li = document.createElement('li');
 
-  carregar();
-</script>
+        // Formatando a data
+        const dataFormatada = new Date(log.timestamp).toLocaleString('pt-BR');
 
+        // Criando link do Google Maps
+        const mapsLink = `https://www.google.com/maps?q=${log.lat},${log.lon}`;
 
+        li.innerHTML = `
+          <strong>${dataFormatada}</strong><br>
+          <a href="${mapsLink}" target="_blank">📍 Ver no Google Maps</a><br>
+          IP do visitante: ${ip}
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    carregar();
+  </script>
 </body>
 </html>
