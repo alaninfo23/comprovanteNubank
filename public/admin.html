@@ -14,14 +14,21 @@
     const res = await fetch('/api/salvar');
     const data = await res.json();
     const ul = document.getElementById('lista');
+    ul.innerHTML = '';
+
     data.reverse().forEach(log => {
       const li = document.createElement('li');
-      li.textContent = `${log.timestamp} - Lat: ${log.lat}, Lon: ${log.lon}`;
+      const dataFormatada = new Date(log.timestamp).toLocaleString('pt-BR');
+      const link = `https://www.google.com/maps?q=${log.lat},${log.lon}`;
+
+      li.innerHTML = `${dataFormatada} - <a href="${link}" target="_blank">Ver no mapa 🌍</a>`;
       ul.appendChild(li);
     });
   }
+
   carregar();
 </script>
+
 
 </body>
 </html>
