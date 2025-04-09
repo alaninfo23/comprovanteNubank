@@ -1,35 +1,36 @@
-import { writeFile, readFile } from 'fs/promises';
-import { join } from 'path';
+import { promises as fs } from 'fs';
+import path from 'path';
 
-const logPath = join(process.cwd(), 'data', 'logs.json');
+const filePath = path.join(process.cwd(), 'data', 'logs.json');
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { lat, lon, timestamp } = req.body;
-    const ip =
-      req.headers['x-forwarded-for']?.split(',')[0] ||
-      req.socket?.remoteAddress;
-    const device = req.headers['user-agent'];
-
-    let logs = [];
     try {
-      const data = await readFile(logPath, 'utf-8');
-      logs = JSON.parse(data);
-    } catch (e) {
-      logs = [];
+      const newLog = req.body;
+
+      // Lê os logs existentes
+      const fileData = await fs.readFile(filePath, 'utf-8');
+      const logs = JSON.parse(fileData);
+
+      // Adiciona o novo log
+      logs.push(newLog);
+
+      // Salva no arquivo
+      await fs.writeFile(filePath, JSON.stringify(logs, null, 2));
+
+      return res.status(200).json({ status: 'ok' });
+    } catch (err) {
+      console.error('Erro ao salvar:', err);
+      return res.status(500).json({ error: 'Erro ao salvar os dados.' });
     }
-
-    logs.push({ lat, lon, timestamp, ip, device });
-
-    await writeFile(logPath, JSON.stringify(logs, null, 2));
-    return res.status(200).json({ status: 'ok' });
-  } else {
+  } else if (req.method === 'GET') {
     try {
-      const data = await readFile(logPath, 'utf-8');
-      const logs = JSON.parse(data);
+      const fileData = await fs.readFile(filePath, 'utf-8');
+      const logs = JSON.parse(fileData);
       return res.status(200).json(logs);
-    } catch {
-      return res.status(200).json([]);
+    } catch (err) {
+      console.error('Erro ao ler:', err);
+      return res.status(500).json({ error: 'Erro ao ler os dados.' });
     }
-  }
-}
+  } else {
+    res.setHeader('Allow', ['GET',
